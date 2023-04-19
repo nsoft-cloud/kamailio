@@ -72,6 +72,7 @@ int bind_usrloc(usrloc_api_t* api) {
 	api->delete_pcontact = delete_pcontact;
     api->unreg_pending_contacts_cb = unreg_pending_contacts_cb;
 	api->get_pcontact = get_pcontact;
+    api->get_parentpcontact_by_childpcontact_and_port = get_parentpcontact_by_childpcontact_and_port;
 	api->assert_identity = assert_identity;
 	api->update_pcontact = update_pcontact;
 	api->update_rx_regsession = update_rx_regsession;

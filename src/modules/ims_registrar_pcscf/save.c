@@ -92,12 +92,18 @@ struct sip_msg* get_request_from_reply(struct sip_msg* reply)
 static inline int calc_contact_expires(contact_t *c,int expires_hdr, int local_time_now)
 {
 	unsigned int r = 0;
-	if (expires_hdr >= 0)
+	if (expires_hdr >= 0){
+		LM_DBG("@@@@@@@@@@@@@ expires_hdr [%d]\n", expires_hdr);
 		r = expires_hdr;
-
+		LM_DBG("@@@@@@@@@@@@@ r value [%u]\n", r);
+	}
 	if (c && c->expires && c->expires->body.len) {
+		LM_DBG("@@@@@@@@@@@@@ expires body [%s]\n", c->expires->body);
 		str2int(&(c->expires->body), (unsigned int*) &r);
 	}
+	LM_DBG("@@@@@@@@@@@@@ local_time_now [%d]\n", local_time_now);
+	LM_DBG("@@@@@@@@@@@@@ final r value [%u]\n", r);
+
 	return local_time_now + r;
 }
 
@@ -132,6 +138,7 @@ static inline int update_contacts(struct sip_msg *req,struct sip_msg *rpl, udoma
 
 	pcscf_act_time();
 	local_time_now = time_now;
+	LM_DBG("@@@@@@@@@@@@@ local_time_now: [%d]\n", local_time_now);
 	if (is_star) {
 		/* first of all, we shouldn't get here...
 		 * then, we will update on NOTIFY */
@@ -144,7 +151,11 @@ static inline int update_contacts(struct sip_msg *req,struct sip_msg *rpl, udoma
 	for (h = rpl->contact; h; h = h->next) {
 		if (h->type == HDR_CONTACT_T && h->parsed) {
 			for (c = ((contact_body_t*) h->parsed)->contacts; c; c = c->next) {
+				LM_DBG("@@@@@@@@@@@@@ expires header: [%d]\n", expires_hdr);
+
 				expires = calc_contact_expires(c, expires_hdr, local_time_now);
+				LM_DBG("@@@@@@@@@@@@@ calculated expires: [%d]\n", expires);
+
 				if (parse_uri(c->uri.s, c->uri.len, &puri) < 0) {
 					LM_DBG("Error parsing Contact URI <%.*s>\n", c->uri.len, c->uri.s);
 					continue;
@@ -461,6 +472,7 @@ int save(struct sip_msg* _m, udomain_t* _d, int _cflags) {
 	service_routes = cscf_get_service_route(_m, &num_service_routes, 1);
 
 	//update contacts
+	LM_DBG("@@@@@@@@@@@@@ Expires header: [%d]\n", expires_hdr);
 	if (!update_contacts(req, _m, _d, cb->star, expires_hdr, public_ids, num_public_ids, service_routes, num_service_routes, 0)) {
 		LM_ERR("failed to update pcontact\n");
 		goto error;

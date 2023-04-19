@@ -82,5 +82,5 @@ int update_security(udomain_t* _d, security_type _t, security_t* _s, struct pcon
 int update_temp_security(udomain_t* _d, security_type _t, security_t* _s, struct pcontact* _c);
 
 int preload_udomain(db1_con_t* _c, udomain_t* _d);
-
+struct pcontact* get_parentpcontact_by_childpcontact_and_port(udomain_t* _d, pcontact_info_t* contact_info, struct pcontact* sp, int reverse_search,unsigned short pport);
 #endif

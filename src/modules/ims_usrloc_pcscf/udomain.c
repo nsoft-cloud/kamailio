@@ -615,6 +615,38 @@ int get_pcontact(udomain_t* _d, pcontact_info_t* contact_info, struct pcontact**
 	return 1; /* Nothing found */
 }
 
+struct pcontact* get_parentpcontact_by_childpcontact_and_port(udomain_t* _d, pcontact_info_t* contact_info, struct pcontact* sp, int reverse_search,unsigned short pport) {
+	unsigned int sl, i, aorhash;
+	struct pcontact* c;
+
+	LM_DBG("start.\n");
+	/* search in cache */
+	aorhash = get_aor_hash(_d, &contact_info->via_host, contact_info->via_port, contact_info->via_prot);
+	sl = aorhash & (_d->size - 1);
+        
+	LM_DBG("get_pcontact slot is [%d]\n", sl);
+	c = reverse_search ? _d->table[sl].last : _d->table[sl].first;
+
+	for (i = 0; i < _d->table[sl].n; i++) {
+		LM_DBG("comparing contact with aorhash [%u], aor [%.*s]\n", c->aorhash, c->aor.len, c->aor.s);
+		LM_DBG("  contact host [%.*s:%d]\n", c->contact_host.len, c->contact_host.s, c->contact_port);
+		LM_DBG("contact received [%d:%.*s:%d]\n", c->received_proto, c->received_host.len, c->received_host.s, c->received_port);
+
+		//if (pport == c->contact_port) {
+			if (strncmp(sp->contact_host.s,c->contact_host.s,c->contact_host.len) == 0){
+				LM_DBG("finding the contact with aorhash [%u], aor [%.*s]\n", c->aorhash, c->aor.len, c->aor.s);
+				return c;
+			}
+			continue;
+		//}
+
+		c = reverse_search ? c->prev : c->next;
+	}
+	LM_DBG("end.\n"); 
+
+	return NULL;
+}
+
 int update_security(udomain_t* _d, security_type _t, security_t* _s, struct pcontact* _c) {
 	if (db_mode == WRITE_THROUGH && db_update_pcontact_security(_c, _t, _s) != 0) {
 		LM_ERR("Error updating security for contact in DB\n");

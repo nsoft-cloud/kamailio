@@ -238,7 +238,7 @@ typedef struct pcontact {
 } pcontact_t;
 
 typedef int (*get_pcontact_t)(struct udomain* _d, pcontact_info_t* contact_info, struct pcontact** _c, int reverse_search);
-
+typedef struct pcontact* (*get_parentpcontact_by_childpcontact_and_port_t)(udomain_t* _d, pcontact_info_t* contact_info, struct pcontact* sp, int reverse_search,unsigned short pport);
 typedef int (*assert_identity_t)(struct udomain* _d, str * _host, unsigned short _port, unsigned short _proto, str * _identity);
 
 typedef int (*insert_pcontact_t)(struct udomain* _d, str* _aor, struct pcontact_info* ci, struct pcontact** _c);
@@ -286,6 +286,8 @@ typedef struct usrloc_api {
     register_ulcb_t register_ulcb;
 
 	get_number_of_contacts_t get_number_of_contacts;
+    get_parentpcontact_by_childpcontact_and_port_t get_parentpcontact_by_childpcontact_and_port;
+
 } usrloc_api_t;
 
 /*! usrloc API export bind function */

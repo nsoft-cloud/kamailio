@@ -84,7 +84,7 @@ extern int subscribe_to_reginfo;
 
 int process_contact(udomain_t * _d, int expires, str contact_uri, int contact_state) {
     char bufport[5], *rest, *sep, *val, *port, *trans;
-    pcontact_t* pcontact;
+    pcontact_t* pcontact, *parent_pcontact;
     struct pcontact_info ci;
     struct sip_uri puri, uri;
     unsigned int received_proto, received_port_len;
@@ -205,6 +205,13 @@ int process_contact(udomain_t * _d, int expires, str contact_uri, int contact_st
             LM_DBG("This contact <%.*s> is in state terminated and is in usrloc so removing it from usrloc\n", contact_uri.len, contact_uri.s);
             if (ul.delete_pcontact(_d, pcontact) != 0) {
                 LM_DBG("failed to delete pcscf contact <%.*s> - not a problem this may have been removed by de registration", contact_uri.len, contact_uri.s);
+            }
+
+            parent_pcontact = ul.get_parentpcontact_by_childpcontact_and_port(_d, &ci, pcontact, 0, 5060);
+            if (parent_pcontact != NULL) {
+                if (ul.delete_pcontact(_d, parent_pcontact) != 0) {
+                    LM_DBG("failed to delete pcscf contact <%.*s> - not a problem this may have been removed by de registration", contact_uri.len, contact_uri.s);
+                }
             }
             /*TODO_LATEST - put this back */
         } else {//state is active

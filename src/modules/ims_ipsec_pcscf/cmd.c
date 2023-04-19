@@ -669,6 +669,10 @@ int ipsec_create(struct sip_msg* m, udomain_t* d, int _cflags)
         goto cleanup;
     }
 
+    //get pcontact is old value
+    LM_DBG("@@@@@@@@@@@@@ pcscf contact <%.*s> expires [%d]\n", pcontact->aor.len, pcontact->aor.s, pcontact->expires);
+    LM_DBG("@@@@@@@@@@@@@ pcscf contact after 0 <%.*s> expires [%d]\n", pcontact->aor.len, pcontact->aor.s, pcontact->expires);
+
     // Get security parameters
     if(pcontact->security_temp == NULL) {
         LM_ERR("No security parameters found in contact\n");

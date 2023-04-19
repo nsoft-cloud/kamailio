@@ -232,6 +232,7 @@ int new_pcontact(struct udomain* _d, str* _contact, struct pcontact_info* _ci, s
 	(*_c)->contact_user.len = sip_uri.user.len;
 
 	(*_c)->expires = _ci->expires;
+	LM_DBG("@@@@@@@@@@@@@ pcontact expires: [%d]\n", (*_c)->expires);
 	(*_c)->reg_state = _ci->reg_state;
 
 	// Add received Info:
@@ -354,7 +355,9 @@ static inline void nodb_timer(pcontact_t* _c)
 
 	get_act_time();
         
-        
+        LM_DBG("@@@@@@@@@@@@@ Expires grace time [%d]\n", expires_grace);
+		LM_DBG("@@@@@@@@@@@@@ expires: [%d]\n", _c->expires);
+		LM_DBG("@@@@@@@@@@@@@ actual time [%d]\n", act_time);
         if ((_c->expires - act_time) + expires_grace <= 0) {//we've allowed some grace time TODO: add as parameter
         //if ((_c->expires - act_time) <= -10) {//we've allowed some grace time TODO: add as parameter
 		LM_DBG("pcscf contact <%.*s> has expired and will be removed\n", _c->aor.len, _c->aor.s);
