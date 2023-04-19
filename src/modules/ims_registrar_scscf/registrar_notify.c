@@ -186,8 +186,12 @@ int can_publish_reg(struct sip_msg *msg, char *_t, char *str2) {
 
     asserted_id = cscf_get_asserted_identity(msg, 0);
     if (!asserted_id.len) {
-        LM_ERR("P-Asserted-Identity empty.\n");
-        goto error;
+        //if its mo we use p_asserted_identity in request - if p_asserted_identity not there we use from_uri
+        LM_ERR("P-Asserted-Identity empty, use from_uri for mo OR to_uri for mt!\n");
+        if (!cscf_get_from_uri(msg, &asserted_id)) {
+            LM_ERR("Error assigning P-Asserted-Identity using From hdr in req");
+            goto error;
+    }
     }
     LM_DBG("P-Asserted-Identity <%.*s>.\n", asserted_id.len, asserted_id.s);
 
@@ -349,8 +353,12 @@ int can_subscribe_to_reg(struct sip_msg *msg, char *_t, char *str2) {
 
     asserted_id = cscf_get_asserted_identity(msg, 0);
     if (!asserted_id.len) {
-        LM_ERR("P-Asserted-Identity empty.\n");
-        goto error;
+        //if its mo we use p_asserted_identity in request - if p_asserted_identity not there we use from_uri
+        LM_ERR("P-Asserted-Identity empty, use from_uri for mo OR to_uri for mt!\n");
+        if (!cscf_get_from_uri(msg, &asserted_id)) {
+            LM_ERR("Error assigning P-Asserted-Identity using From hdr in req");
+            goto error;
+    }
     }
     LM_DBG("P-Asserted-Identity <%.*s>.\n",
             asserted_id.len, asserted_id.s);
